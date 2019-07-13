@@ -49,10 +49,11 @@ public class Messages {
     public static final String MOVE_SUCCESS = getString("moveSuccess");
     public static final String NO_FACTION = getString("noFaction");
     public static final String STAFF_PREFIX = getString("staffPrefix");
-    public static final String BYPASSED = getString("bypassed");
     public static final String NO_ADD_HOLOGRAM_HERE = getString("noAddHologramHere");
     public static final String BAD_BAL = getString("badBal");
     public static final String EXISTS_ALREADY = getString("existsAlready");
+    public static final String BYPASSED_CHUNKS = getString("bypassedChunks");
+    public static final String BYPASSED_BAL = getString("bypassedBal");
 
     private static String getString(String element){
         try {

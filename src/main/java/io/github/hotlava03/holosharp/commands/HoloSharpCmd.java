@@ -40,22 +40,18 @@ import java.util.Set;
 public class HoloSharpCmd implements CommandExecutor {
 
     private HoloSharp plugin;
-    private Player player;
-    private Location coords;
-    private String[] args;
 
     public HoloSharpCmd(HoloSharp instance) {
         plugin = instance;
     }
 
-    public boolean onCommand(CommandSender sender, Command Command, String label, String[] rawArgs) {
+    public boolean onCommand(CommandSender sender, Command Command, String label, String[] args) {
         if (!(sender instanceof Player)) {
             sender.sendMessage("[HoloSharp] Sorry, this command can only be ran by in-game players.");
             return true;
         }
-        args = rawArgs;
-        player = (Player) sender;
-        coords = player.getLocation();
+        Player player = (Player) sender;
+        Location coords = player.getLocation();
         coords.setY(player.getLocation().getBlockY() + 2);
         if (args.length == 0 && !player.hasPermission("holosharp.staff.help")) {
             player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE);
@@ -64,30 +60,30 @@ public class HoloSharpCmd implements CommandExecutor {
             player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE_ADMIN);
             return true;
         }
-        switch (rawArgs[0].toLowerCase()) {
+        switch (args[0].toLowerCase()) {
             case "buy":
-                buyHologram();
+                buyHologram(player,coords,args);
                 break;
             case "delete":
             case "remove":
             case "del":
-                deleteHologram();
+                deleteHologram(player,args);
                 break;
             case "addline":
-                addLine();
+                addLine(player,args);
                 break;
             case "list":
             case "hololist":
-                list();
+                list(player,args);
                 break;
             case "movehere":
-                moveHere();
+                moveHere(player,coords,args);
                 break;
             case "reload":
-                reloadPlugin();
+                reloadPlugin(player);
                 break;
             case "help":
-                sendDetailedHelp();
+                sendDetailedHelp(player,args);
                 break;
             default:
                 if (!player.hasPermission("holosharp.staff.help"))
@@ -106,7 +102,7 @@ public class HoloSharpCmd implements CommandExecutor {
         Adds first line only.
         To add more lines user runs /hs addline <params>
     */
-    private void buyHologram() {
+    private void buyHologram(Player player, Location coords, String[] args) {
         if (args.length < 3) {
             player.sendMessage(Messages.PREFIX + Messages.BUY_HELP);
             return;
@@ -115,26 +111,22 @@ public class HoloSharpCmd implements CommandExecutor {
             player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_FACTION);
             return;
         }
-        boolean notBypassedYet = true;
         if (!MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && !player.hasPermission("holosharp.staff.bypass")) { // When a player is trying to add a hologram outside their faction
             player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_ADD_HOLOGRAM_HERE);
             return;
-        }else if(MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && player.hasPermission("holosharp.staff.bypass")){
-            player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED);
-            notBypassedYet = false;
-        }
+        }else if(MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && player.hasPermission("holosharp.staff.bypass"))
+            player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED_CHUNKS);
         if (HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram") && !player.hasPermission("holosharp.staff.bypass")) { // If a player doesn't have enough money
             player.sendMessage(Messages.ERROR_PREFIX+Messages.BAD_BAL+plugin.getConfig().getDouble("costPerHologram"));
             return;
-        }else if((!(HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram")) && player.hasPermission("holosharp.staff.bypass")) && notBypassedYet)
-            player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED);
-
+        }else if(!(HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram")) && player.hasPermission("holosharp.staff.bypass"))
+            player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED_BAL);
         if (!(HoloSharp.holograms.get("holograms." + player.getName() + "." + args[1] + ".coordinates") == null)) {
             player.sendMessage(Messages.ERROR_PREFIX+Messages.EXISTS_ALREADY);
             return;
         }
         Hologram hologram = HologramsAPI.createHologram(plugin, coords);
-        TextLine line = hologram.insertTextLine(0, getTxt(1).replaceAll("&", "\u00a7"));
+        TextLine line = hologram.insertTextLine(0, getTxt(1,args).replaceAll("&", "\u00a7"));
         List<String> lineList = new ArrayList<>();
         lineList.add(line.getText());
         try {
@@ -157,7 +149,7 @@ public class HoloSharpCmd implements CommandExecutor {
         If the user is staff, then args[1] MAY be a user name, but that will
         be verified in the beginning through the args length.
     */
-    private void deleteHologram() {
+    private void deleteHologram(Player player, String[] args) {
         String name;
         String owner;
         if (args.length > 2 && player.hasPermission("holosharp.staff.deleteOther")){
@@ -203,7 +195,7 @@ public class HoloSharpCmd implements CommandExecutor {
         Reloads plugin config.
         reload() is a method in the instance.
     */
-    private void reloadPlugin() {
+    private void reloadPlugin(Player player) {
         if (!player.hasPermission("holosharp.staff.reload")) {
             player.sendMessage(Messages.ERROR_PREFIX + Messages.NO_PERMS);
             return;
@@ -216,7 +208,7 @@ public class HoloSharpCmd implements CommandExecutor {
         As simple as adding a line.
         Called on sub-command.
     */
-    private void addLine() {
+    private void addLine(Player player, String[] args) {
         String playerName = player.getName();
         if (args.length < 2) {
             player.sendMessage(Messages.PREFIX + Messages.ADDLINE_HELP);
@@ -228,7 +220,7 @@ public class HoloSharpCmd implements CommandExecutor {
         String newLine = "";
         for (Hologram holo : list) {
             if (holo.getLocation().equals(location)) {
-                newLine = holo.appendTextLine(getTxt(1).replace("&", "\u00a7")).getText();
+                newLine = holo.appendTextLine(getTxt(1,args).replace("&", "\u00a7")).getText();
                 success = true;
             }
         }
@@ -246,19 +238,19 @@ public class HoloSharpCmd implements CommandExecutor {
         Called on sub-command execution.
         Mostly verifies if the user is staff or not... And if the args are greater than 1.
     */
-    private void list() {
+    private void list(Player player, String[] args) {
         if (player.hasPermission("holosharp.staff.listOther") && args.length > 1) {
-            sendList(args[1]);
+            sendList(args[1],player);
             return;
         }
-        sendList(player.getName());
+        sendList(player.getName(),player);
     }
 
     /*
         Called for the /hs list command.
         Universal for both staff and players, called method is above for the command.
     */
-    private void sendList(String playerName) {
+    private void sendList(String playerName, Player player) {
         Set<String> names;
         try {
             names = HoloSharp.holograms.getConfigurationSection("holograms." + playerName).getKeys(false);
@@ -269,16 +261,8 @@ public class HoloSharpCmd implements CommandExecutor {
         List<String> elements = new ArrayList<>();
         for (String name : names) {
             Location location = (Location) HoloSharp.holograms.get(("holograms." + playerName + "." + name + ".coordinates"));
-            if(location == null){
-                try {
-                    HologramIdentification.deleteHologram(playerName,name);
-                    continue;
-                } catch (IOException e) {
-                    player.sendMessage(Messages.ERROR_PREFIX+Messages.FATAL);
-                    e.printStackTrace();
-                    return;
-                }
-            }
+            if(location == null)
+                continue;
             elements.add(Messages.LIST_PREFIX + name + Messages.LIST_ELEMENT_SEP + Math.round(location.getX()) + " " + Math.round(location.getY()) + " " + Math.round(location.getZ()) + Messages.LIST_ELEMENT_SEP2 + location.getWorld().getName());
         }
         StringBuilder sb = new StringBuilder();
@@ -291,7 +275,7 @@ public class HoloSharpCmd implements CommandExecutor {
         Moves the hologram to the user's location.
         If the requirements aren't met, then the method will return (void).
     */
-    private void moveHere() {
+    private void moveHere(Player player, Location coords, String[] args) {
         if (args.length < 2) {
             player.sendMessage(Messages.PREFIX + Messages.MOVE_HERE_HELP);
             return;
@@ -340,7 +324,7 @@ public class HoloSharpCmd implements CommandExecutor {
         This method sends the user information about each sub-command.
         In case of having no command found, the default message will be sent.
     */
-    private void sendDetailedHelp() {
+    private void sendDetailedHelp(Player player, String[] args) {
         if(args.length == 1) {
             if (player.hasPermission("holosharp.staff.help"))
                 player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE_ADMIN);
@@ -393,7 +377,7 @@ public class HoloSharpCmd implements CommandExecutor {
         Used when necessary to get text that contains spaces in command arguments.
         Basically a utility method in the middle of nowhere :P
     */
-    private String getTxt(int from) {
+    private String getTxt(int from, String[] args) {
         String txt = "";
         int i = 0;
         for (String arg : args) {

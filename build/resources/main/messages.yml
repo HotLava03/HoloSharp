@@ -38,7 +38,8 @@ cmdUsageAdmin: "Admin usage: &f/hs [help] <buy|remove|addLine|list|about>"
 reloadSuccess: "Plugin config reloaded successfully."
 removeOtherHelp: "Param &fremove &8&l- &7Usage: &f/hs remove [user] <name>&7. Deletes completely a hologram the given user owns, or yours if you don't specify a user."
 holoListOtherHelp: "Param &flist &8&l- &7Usage: &f/hs list [user]&7. Keep [user] empty for your own hologram list. Only staff can list others' holograms."
-bypassed: "Notice: You have bypassed a normal user restriction because of your rank/permissions."
+bypassedChunks: "Notice: You have bypassed the &ffaction territory restriction &7for normal users due to your rank/permissions."
+bypassedBal: "Notice: You have bypassed the &fmoney balance restriction &7for normal users due to your rank/permissions."
 
 # Error strings
 notFound: "That hologram was not found."

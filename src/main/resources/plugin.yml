@@ -1,0 +1,26 @@
+name: HoloSharp
+version: 1.0-SNAPSHOT
+author: HotLava03
+main: io.github.hotlava03.holosharp.HoloSharp
+api-version: 1.12.2
+softdepend:
+  [Factions, HolographicDisplays, Vault]
+commands:
+  holosharp:
+    description: Buy a hologram
+    usage: /holosharp
+    aliases:
+      - hs
+      - holos
+      - hsharp
+permissions:
+  holosharp.staff.help:
+    description: Get access to staff help.
+  holosharp.staff.deleteOther:
+    description: Delete others' holograms.
+  holosharp.staff.listOther:
+    description: List others' holograms.
+  holosharp.staff.reload:
+    description: Reload the plugin configuration files.
+  holosharp.staff.bypass:
+    description: Bypasses some user restrictions (not all to avoid errors)

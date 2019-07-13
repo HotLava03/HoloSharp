@@ -1,0 +1,52 @@
+# Prefix sent in all messages. Remember, if you want a color, you can add it just at the end of it.
+prefix: "&9HoloSharp &8&l» &7"
+# Same as above, but for errors.
+errorPrefix: "&cHoloSharp &8&l» &7"
+# Prefix for some staff actions
+staffPrefix: "&4Staff &8&l» &7"
+
+# The following messages can be edited, but it is mostly intended to edit them only in case of color customization or changing color. Changing context of the messages is obviously not recommended.
+cmdUsage: "Usage: &f/hs [help] <buy|remove|addLine|list|about>&7. No params are case sensitive."
+deletedSuccess: "Successfully deleted the hologram."
+addLineSuccess: "Added a line successfully to hologram &f"
+moveSuccess: "Hologram moved successfully to your location."
+# Variable in the end (costPerHologram from config.yml)
+boughtSuccess: "Hologram purchased successfully for &f"
+# Beginning of list strings
+# Notice: listHeader has NO prefix.
+listHeader1: "&8&l-------------[ &9Holograms owned by &7"
+listHeader2: " &8&l]-------------"
+listEnd: "&8&l---------------------------------------------------"
+# Only a color, add text if you want a special prefix behind list elements (not recommended as it might be spammy)
+listPrefix: "&9"
+# Separator between list element name and other info
+listElementSep: " &8&l- &7Coordinates: &f"
+listElementSep2: " &8&l- &7World: &f"
+# End of list strings
+
+# Help messages
+# If the message seems incomplete, it is because there is a variable after it. For decoration you can change its color, as the default message looks:
+buyHelp: "Param &fbuy &8&l- &7Usage: &f/hs buy <name> <text...>&7. Buy a hologram in your location for the price of &f"
+removeHelp: "Param &fremove &8&l- &7Usage: &f/hs del <name>&7. Can also be used with &fdel&7 and &fdelete&7. Deletes completely a hologram you own."
+addLineHelp: "Param &faddLine &8&l- &7Usage: &f/hs addLine <name> <text>&7. Adds a line to your hologram"
+holoListHelp: "Param &fholoList &8&l- &7Usage: &f/hs holoList&7. Lists all the holograms you own."
+aboutHelp: "Param &fabout &8&l- &7Simple as showing information about the plugin. No other params for it."
+moveHereHelp: "Param &fmoveHere &8&l- &7Usage: &f/hs moveHere <name>&7. Moves the hologram to your location."
+
+# Staff command strings
+cmdUsageAdmin: "Admin usage: &f/hs [help] <buy|remove|addLine|list|about>"
+reloadSuccess: "Plugin config reloaded successfully."
+removeOtherHelp: "Param &fremove &8&l- &7Usage: &f/hs remove [user] <name>&7. Deletes completely a hologram the given user owns, or yours if you don't specify a user."
+holoListOtherHelp: "Param &flist &8&l- &7Usage: &f/hs list [user]&7. Keep [user] empty for your own hologram list. Only staff can list others' holograms."
+bypassed: "Notice: You have bypassed a normal user restriction because of your rank/permissions."
+
+# Error strings
+notFound: "That hologram was not found."
+playerNotFound: "Player not found."
+noPerms: "You do not have permission to do this."
+fatal: "A fatal error has occurred. Please contact an administrator to check console."
+noFaction: "You must be in a faction in order to purchase a hologram."
+noAddHologramHere: "You cannot add a hologram here."
+# Has a variable
+badBal: "You do not have enough money to purchase a hologram. Price: &f"
+existsAlready: "That hologram already exists. Please choose another name (recommended) or delete the one with this name."

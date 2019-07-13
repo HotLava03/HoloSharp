@@ -54,4 +54,14 @@ public class HologramIdentification{
     public static Location getLocation(String player, String name){
         return (Location) HOLOGRAMS.get("holograms."+player+"."+name+".coordinates");
     }
+
+    public static boolean transfer(String name, String oldPlayer, String newPlayer){
+        Location location = (Location) HOLOGRAMS.get("holograms."+oldPlayer+"."+name+".coordinates");
+        List<String> lines = HOLOGRAMS.getStringList("holograms."+oldPlayer+"."+name+".lines");
+        if(HOLOGRAMS.get("holograms."+oldPlayer+"."+name+".coordinates") == null) return false;
+        HOLOGRAMS.set("holograms."+oldPlayer+"."+name,null);
+        HOLOGRAMS.set("holograms."+newPlayer+"."+name+".coordinates",location);
+        HOLOGRAMS.set("holograms."+newPlayer+"."+name+".lines",lines);
+        return true;
+    }
 }

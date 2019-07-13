@@ -34,12 +34,18 @@ aboutHelp: "Param &fabout &8&l- &7Simple as showing information about the plugin
 moveHereHelp: "Param &fmoveHere &8&l- &7Usage: &f/hs moveHere <name>&7. Moves the hologram to your location."
 
 # Staff command strings
-cmdUsageAdmin: "Admin usage: &f/hs [help] <buy|remove|addLine|list|about>"
+cmdUsageAdmin: "Admin usage: &f/hs [help] <buy|remove|addLine|list|transfer|transferAll|about>"
 reloadSuccess: "Plugin config reloaded successfully."
 removeOtherHelp: "Param &fremove &8&l- &7Usage: &f/hs remove [user] <name>&7. Deletes completely a hologram the given user owns, or yours if you don't specify a user."
 holoListOtherHelp: "Param &flist &8&l- &7Usage: &f/hs list [user]&7. Keep [user] empty for your own hologram list. Only staff can list others' holograms."
+transferHelp: "Param &ftransfer &8&l- &7Usage: &f/hs transfer <name> <userFrom> <userTo>&7. Transfers hologram ownership from a user to another. WARNING: PLAYER NAMES ARE CASE SENSITIVE!"
+transferAllHelp: "Param &ftransferall &8&l- &7Usage: &f/hs transferall <userFrom> <userTo>&7. Transfers all holograms from a user to another. WARNING: PLAYER NAMES ARE CASE SENSITIVE!"
 bypassedChunks: "Notice: You have bypassed the &ffaction territory restriction &7for normal users due to your rank/permissions."
 bypassedBal: "Notice: You have bypassed the &fmoney balance restriction &7for normal users due to your rank/permissions."
+# has variable
+transferSuccess: "Successfully transferred hologram to player &f"
+# has variable
+transferAllSuccess: "Successfully transferred all holograms from that player to &f"
 
 # Error strings
 notFound: "That hologram was not found."

@@ -54,6 +54,10 @@ public class Messages {
     public static final String EXISTS_ALREADY = getString("existsAlready");
     public static final String BYPASSED_CHUNKS = getString("bypassedChunks");
     public static final String BYPASSED_BAL = getString("bypassedBal");
+    public static final String TRANSFER_HELP = getString("transferHelp");
+    public static final String TRANSFER_ALL_HELP = getString("transferAllHelp");
+    public static final String TRANSFER_SUCCESS = getString("transferSuccess");
+    public static final String TRANSFER_ALL_SUCCESS = getString("transferAllSuccess");
 
     private static String getString(String element){
         try {

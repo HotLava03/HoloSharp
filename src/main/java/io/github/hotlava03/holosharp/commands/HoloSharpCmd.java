@@ -51,6 +51,11 @@ public class HoloSharpCmd implements CommandExecutor {
             return true;
         }
         Player player = (Player) sender;
+        // If this permission isn't added to the user, they have no permission to use the plugin at all
+        if(!player.hasPermission("holosharp.user.hs")){
+            player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+            return true;
+        }
         Location coords = player.getLocation();
         coords.setY(player.getLocation().getBlockY() + 2);
         if (args.length == 0 && !player.hasPermission("holosharp.staff.help")) {
@@ -61,6 +66,7 @@ public class HoloSharpCmd implements CommandExecutor {
             return true;
         }
         switch (args[0].toLowerCase()) {
+            case "create":
             case "buy":
                 buyHologram(player,coords,args);
                 break;
@@ -84,6 +90,12 @@ public class HoloSharpCmd implements CommandExecutor {
                 break;
             case "help":
                 sendDetailedHelp(player,args);
+                break;
+            case "transfer":
+                transferHologram(player,args);
+                break;
+            case "transferall":
+                transferAll(player,args);
                 break;
             default:
                 if (!player.hasPermission("holosharp.staff.help"))
@@ -114,12 +126,12 @@ public class HoloSharpCmd implements CommandExecutor {
         if (!MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && !player.hasPermission("holosharp.staff.bypass")) { // When a player is trying to add a hologram outside their faction
             player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_ADD_HOLOGRAM_HERE);
             return;
-        }else if(MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && player.hasPermission("holosharp.staff.bypass"))
+        }else if(!MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && player.hasPermission("holosharp.staff.bypass"))
             player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED_CHUNKS);
         if (HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram") && !player.hasPermission("holosharp.staff.bypass")) { // If a player doesn't have enough money
             player.sendMessage(Messages.ERROR_PREFIX+Messages.BAD_BAL+plugin.getConfig().getDouble("costPerHologram"));
             return;
-        }else if(!(HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram")) && player.hasPermission("holosharp.staff.bypass"))
+        }else if(HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram") && player.hasPermission("holosharp.staff.bypass"))
             player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED_BAL);
         if (!(HoloSharp.holograms.get("holograms." + player.getName() + "." + args[1] + ".coordinates") == null)) {
             player.sendMessage(Messages.ERROR_PREFIX+Messages.EXISTS_ALREADY);
@@ -321,6 +333,41 @@ public class HoloSharpCmd implements CommandExecutor {
     }
 
     /*
+        Transfers a given hologram name to another player.
+        Use transferAll() for a full transfer.
+    */
+    private void transferHologram(Player player, String[] args){
+        if(!player.hasPermission("holosharp.staff.transfer")){
+            player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+            return;
+        }
+        if(args.length < 4) {
+            player.sendMessage(Messages.PREFIX+Messages.TRANSFER_HELP);
+            return;
+        }
+        if(!HologramIdentification.transfer(args[1],args[2],args[3])){
+            player.sendMessage(Messages.ERROR_PREFIX+Messages.NOT_FOUND);
+            return;
+        }
+        player.sendMessage(Messages.STAFF_PREFIX+Messages.TRANSFER_SUCCESS+args[3]);
+    }
+
+    /*
+        Transfers a player's holograms to another.
+        Can be used in an account transfer, I assume?
+    */
+    private void transferAll(Player player, String[] args){
+        if(args.length < 3){
+            player.sendMessage(Messages.ERROR_PREFIX+Messages.TRANSFER_ALL_HELP);
+            return;
+        }
+        Set<String> keys = HoloSharp.holograms.getConfigurationSection("holograms."+args[1]).getKeys(false);
+        for(String key : keys)
+            HologramIdentification.transfer(key,args[1],args[2]);
+        player.sendMessage(Messages.PREFIX+Messages.TRANSFER_ALL_SUCCESS+args[2]);
+    }
+
+    /*
         This method sends the user information about each sub-command.
         In case of having no command found, the default message will be sent.
     */
@@ -360,6 +407,20 @@ public class HoloSharpCmd implements CommandExecutor {
                     break;
                 }
                 player.sendMessage(Messages.PREFIX + Messages.HOLOLISTOTHER_HELP);
+                break;
+            case "transfer":
+                if(!player.hasPermission("holosharp.staff.transfer")){
+                    player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+                    break;
+                }
+                player.sendMessage(Messages.PREFIX+Messages.TRANSFER_HELP);
+                break;
+            case "transferall":
+                if(!player.hasPermission("holosharp.staff.transferAll")){
+                    player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+                    break;
+                }
+                player.sendMessage(Messages.PREFIX+Messages.TRANSFER_ALL_HELP);
                 break;
             default:
                 if (!player.hasPermission("holosharp.staff.help"))

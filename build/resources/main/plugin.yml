@@ -24,3 +24,9 @@ permissions:
     description: Reload the plugin configuration files.
   holosharp.staff.bypass:
     description: Bypasses some user restrictions (not all to avoid errors)
+  holosharp.user.hs:
+    description: Allows plugin usage generally
+  holosharp.staff.transfer:
+    description: Allow to transfer a hologram from a user to another.
+  holosharp.staff.transferAll:
+    description: Allow transfering all holograms from a user to another.

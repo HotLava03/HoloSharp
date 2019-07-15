@@ -1,5 +1,5 @@
 name: HoloSharp
-version: 1.0-SNAPSHOT
+version: 1.0-SNAPSHOT.03
 author: HotLava03
 main: io.github.hotlava03.holosharp.HoloSharp
 api-version: 1.12.2
@@ -30,3 +30,7 @@ permissions:
     description: Allow to transfer a hologram from a user to another.
   holosharp.staff.transferAll:
     description: Allow transfering all holograms from a user to another.
+  holosharp.staff.deleteLineOther:
+    description: Allow deleting another user's line from another user's hologram.
+  holosharp.staff.create:
+    description: Create a hologram without any costs or restrictions, for any user.

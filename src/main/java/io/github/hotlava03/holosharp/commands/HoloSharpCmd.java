@@ -22,7 +22,6 @@ import com.massivecraft.factions.entity.BoardColl;
 import com.massivecraft.factions.entity.MPlayer;
 import com.massivecraft.massivecore.ps.PS;
 import io.github.hotlava03.holosharp.HoloSharp;
-import io.github.hotlava03.holosharp.config.Messages;
 import io.github.hotlava03.holosharp.util.HologramIdentification;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -35,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import static io.github.hotlava03.holosharp.config.Messages.*;
 
 
 public class HoloSharpCmd implements CommandExecutor {
@@ -52,56 +53,62 @@ public class HoloSharpCmd implements CommandExecutor {
         }
         Player player = (Player) sender;
         // If this permission isn't added to the user, they have no permission to use the plugin at all
-        if(!player.hasPermission("holosharp.user.hs")){
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+        if (!player.hasPermission("holosharp.user.hs")) {
+            player.sendMessage(ERROR_PREFIX + NO_PERMS);
             return true;
         }
         Location coords = player.getLocation();
         coords.setY(player.getLocation().getBlockY() + 2);
         if (args.length == 0 && !player.hasPermission("holosharp.staff.help")) {
-            player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE);
+            player.sendMessage(PREFIX + CMD_USAGE);
             return true;
         } else if (args.length == 0) {
-            player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE_ADMIN);
+            player.sendMessage(PREFIX + CMD_USAGE_ADMIN);
             return true;
         }
         switch (args[0].toLowerCase()) {
-            case "create":
             case "buy":
-                buyHologram(player,coords,args);
+                buyHologram(player, coords, args);
                 break;
             case "delete":
             case "remove":
             case "del":
-                deleteHologram(player,args);
+                deleteHologram(player, args);
                 break;
             case "addline":
-                addLine(player,args);
+                addLine(player, args);
                 break;
             case "list":
             case "hololist":
-                list(player,args);
+                list(player, args);
                 break;
             case "movehere":
-                moveHere(player,coords,args);
+                moveHere(player, coords, args);
                 break;
             case "reload":
                 reloadPlugin(player);
                 break;
             case "help":
-                sendDetailedHelp(player,args);
+                sendDetailedHelp(player, args);
                 break;
             case "transfer":
-                transferHologram(player,args);
+                transferHologram(player, args);
                 break;
             case "transferall":
-                transferAll(player,args);
+                transferAll(player, args);
+                break;
+            case "removeline":
+            case "deleteline":
+                deleteLine(player,args);
+                break;
+            case "create":
+                createHologram(player,args);
                 break;
             default:
                 if (!player.hasPermission("holosharp.staff.help"))
-                    player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE);
+                    player.sendMessage(PREFIX + CMD_USAGE);
                 else
-                    player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE_ADMIN);
+                    player.sendMessage(PREFIX + CMD_USAGE_ADMIN);
 
         }
         return true;
@@ -116,43 +123,35 @@ public class HoloSharpCmd implements CommandExecutor {
     */
     private void buyHologram(Player player, Location coords, String[] args) {
         if (args.length < 3) {
-            player.sendMessage(Messages.PREFIX + Messages.BUY_HELP);
+            player.sendMessage(PREFIX + BUY_HELP);
             return;
         }
         if (!MPlayer.get(player).hasFaction()) { // Even if player is in Wilderness, adding holograms there won't be allowed
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_FACTION);
+            player.sendMessage(ERROR_PREFIX + NO_FACTION);
             return;
         }
         if (!MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && !player.hasPermission("holosharp.staff.bypass")) { // When a player is trying to add a hologram outside their faction
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_ADD_HOLOGRAM_HERE);
+            player.sendMessage(ERROR_PREFIX + NO_ADD_HOLOGRAM_HERE);
             return;
-        }else if(!MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && player.hasPermission("holosharp.staff.bypass"))
-            player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED_CHUNKS);
+        } else if (!MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk()))) && player.hasPermission("holosharp.staff.bypass"))
+            player.sendMessage(STAFF_PREFIX + BYPASSED_CHUNKS);
         if (HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram") && !player.hasPermission("holosharp.staff.bypass")) { // If a player doesn't have enough money
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.BAD_BAL+plugin.getConfig().getDouble("costPerHologram"));
+            player.sendMessage(ERROR_PREFIX + BAD_BAL + plugin.getConfig().getDouble("costPerHologram"));
             return;
-        }else if(HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram") && player.hasPermission("holosharp.staff.bypass"))
-            player.sendMessage(Messages.STAFF_PREFIX+Messages.BYPASSED_BAL);
+        } else if (HoloSharp.econ.getBalance(player) <= plugin.getConfig().getDouble("costPerHologram") && player.hasPermission("holosharp.staff.bypass"))
+            player.sendMessage(STAFF_PREFIX + BYPASSED_BAL);
         if (!(HoloSharp.holograms.get("holograms." + player.getName() + "." + args[1] + ".coordinates") == null)) {
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.EXISTS_ALREADY);
+            player.sendMessage(ERROR_PREFIX + EXISTS_ALREADY);
             return;
         }
-        Hologram hologram = HologramsAPI.createHologram(plugin, coords);
-        TextLine line = hologram.insertTextLine(0, getTxt(1,args).replaceAll("&", "\u00a7"));
-        List<String> lineList = new ArrayList<>();
-        lineList.add(line.getText());
-        try {
-            if (!HologramIdentification.saveHologram(player, hologram, args[1], lineList)) {
-                player.sendMessage(Messages.ERROR_PREFIX+Messages.EXISTS_ALREADY);
-                return;
-            }
-        } catch (IOException e) {
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.FATAL);
-            e.printStackTrace();
+        if (tooManyHolograms(player) && !player.hasPermission("holosharp.staff.bypass")) {
+            player.sendMessage(ERROR_PREFIX + TOO_MANY_HOLOGRAMS);
             return;
-        }
+        }else if (tooManyHolograms(player) && player.hasPermission("holosharp.staff.bypass"))
+            player.sendMessage(STAFF_PREFIX + BYPASSED_LIMIT);
+        if(!createHologram(coords,player, getTxt(1,args),args[1],player.getName())) return;
         HoloSharp.econ.withdrawPlayer(player, plugin.getConfig().getDouble("costPerHologram")); // take money, varies in the config.yml
-        player.sendMessage(Messages.PREFIX+Messages.BUY_SUCCESS+plugin.getConfig().getDouble("costPerHologram"));
+        player.sendMessage(PREFIX + BUY_SUCCESS + plugin.getConfig().getDouble("costPerHologram"));
     }
 
     /*
@@ -164,30 +163,29 @@ public class HoloSharpCmd implements CommandExecutor {
     private void deleteHologram(Player player, String[] args) {
         String name;
         String owner;
-        if (args.length > 2 && player.hasPermission("holosharp.staff.deleteOther")){
+        if (args.length > 2 && player.hasPermission("holosharp.staff.deleteOther")) {
             name = args[2];
             owner = args[1];
-        } else if(args.length > 1){
+        } else if (args.length > 1) {
             name = args[1];
             owner = player.getName();
-        }
-        else{
-            if(!player.hasPermission("holosharp.staff.deleteOther"))
-                player.sendMessage(Messages.PREFIX+Messages.REMOVE_HELP);
+        } else {
+            if (!player.hasPermission("holosharp.staff.deleteOther"))
+                player.sendMessage(PREFIX + REMOVE_HELP);
             else
-                player.sendMessage(Messages.PREFIX+Messages.REMOVE_OTHER_HELP);
+                player.sendMessage(PREFIX + REMOVE_OTHER_HELP);
             return;
         }
         Location location;
         try {
             location = HologramIdentification.deleteHologram(owner, name);
         } catch (IOException e) {
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.FATAL);
+            player.sendMessage(ERROR_PREFIX + FATAL);
             e.printStackTrace();
             return;
         }
         if (location == null) {
-            player.sendMessage(Messages.ERROR_PREFIX + Messages.NOT_FOUND);
+            player.sendMessage(ERROR_PREFIX + NOT_FOUND);
             return;
         }
         Collection<Hologram> list = HologramsAPI.getHolograms(plugin);
@@ -195,11 +193,11 @@ public class HoloSharpCmd implements CommandExecutor {
             if (holo.getLocation().equals(location)) {
                 holo.clearLines();
                 holo.delete();
-                player.sendMessage(Messages.PREFIX + Messages.DELETED_SUCCESS);
+                player.sendMessage(PREFIX + DELETED_SUCCESS);
                 return;
             }
         }
-        player.sendMessage(Messages.ERROR_PREFIX + Messages.NOT_FOUND);
+        player.sendMessage(ERROR_PREFIX + NOT_FOUND);
     }
 
     /*
@@ -207,13 +205,13 @@ public class HoloSharpCmd implements CommandExecutor {
         Reloads plugin config.
         reload() is a method in the instance.
     */
-    private void reloadPlugin(Player player) {
+    private void reloadPlugin(Player player){
         if (!player.hasPermission("holosharp.staff.reload")) {
-            player.sendMessage(Messages.ERROR_PREFIX + Messages.NO_PERMS);
+            player.sendMessage(ERROR_PREFIX + NO_PERMS);
             return;
         }
         plugin.reload();
-        player.sendMessage(Messages.PREFIX + Messages.RELOAD_SUCCESS);
+        player.sendMessage(PREFIX + RELOAD_SUCCESS);
     }
 
     /*
@@ -223,7 +221,7 @@ public class HoloSharpCmd implements CommandExecutor {
     private void addLine(Player player, String[] args) {
         String playerName = player.getName();
         if (args.length < 2) {
-            player.sendMessage(Messages.PREFIX + Messages.ADDLINE_HELP);
+            player.sendMessage(PREFIX + ADDLINE_HELP);
             return;
         }
         Location location = HologramIdentification.getLocation(playerName, args[1]);
@@ -232,18 +230,23 @@ public class HoloSharpCmd implements CommandExecutor {
         String newLine = "";
         for (Hologram holo : list) {
             if (holo.getLocation().equals(location)) {
-                newLine = holo.appendTextLine(getTxt(1,args).replace("&", "\u00a7")).getText();
+                newLine = holo.appendTextLine(getTxt(1, args).replace("&", "\u00a7")).getText();
                 success = true;
             }
         }
         List<String> lines = HoloSharp.holograms.getStringList("holograms." + playerName + "." + args[1] + ".lines");
         lines.add(newLine);
         if (!success) {
-            player.sendMessage(Messages.PREFIX + Messages.NOT_FOUND);
+            player.sendMessage(PREFIX + NOT_FOUND);
             return;
         }
-        HologramIdentification.addLine(player, args[1], lines);
-        player.sendMessage(Messages.PREFIX + Messages.ADDLINE_SUCCESS + args[1]);
+        try {
+            HologramIdentification.addLine(player, args[1], lines);
+        } catch (IOException e) {
+            player.sendMessage(ERROR_PREFIX + FATAL);
+            return;
+        }
+        player.sendMessage(PREFIX + ADDLINE_SUCCESS + args[1]);
     }
 
     /*
@@ -252,10 +255,10 @@ public class HoloSharpCmd implements CommandExecutor {
     */
     private void list(Player player, String[] args) {
         if (player.hasPermission("holosharp.staff.listOther") && args.length > 1) {
-            sendList(args[1],player);
+            sendList(args[1], player);
             return;
         }
-        sendList(player.getName(),player);
+        sendList(player.getName(), player);
     }
 
     /*
@@ -267,20 +270,20 @@ public class HoloSharpCmd implements CommandExecutor {
         try {
             names = HoloSharp.holograms.getConfigurationSection("holograms." + playerName).getKeys(false);
         } catch (NullPointerException e) {
-            player.sendMessage(Messages.ERROR_PREFIX + Messages.PLAYER_NOT_FOUND);
+            player.sendMessage(ERROR_PREFIX + PLAYER_NOT_FOUND);
             return;
         }
         List<String> elements = new ArrayList<>();
         for (String name : names) {
             Location location = (Location) HoloSharp.holograms.get(("holograms." + playerName + "." + name + ".coordinates"));
-            if(location == null)
+            if (location == null)
                 continue;
-            elements.add(Messages.LIST_PREFIX + name + Messages.LIST_ELEMENT_SEP + Math.round(location.getX()) + " " + Math.round(location.getY()) + " " + Math.round(location.getZ()) + Messages.LIST_ELEMENT_SEP2 + location.getWorld().getName());
+            elements.add(LIST_PREFIX + name + LIST_ELEMENT_SEP + Math.round(location.getX()) + " " + Math.round(location.getY()) + " " + Math.round(location.getZ()) + LIST_ELEMENT_SEP2 + location.getWorld().getName());
         }
         StringBuilder sb = new StringBuilder();
         for (String element : elements)
             sb.append(element).append("\n");
-        player.sendMessage(Messages.LIST_HEADER_1 + playerName + Messages.LIST_HEADER_2 + "\n" + sb + Messages.LIST_END);
+        player.sendMessage(LIST_HEADER_1 + playerName + LIST_HEADER_2 + "\n" + sb + LIST_END);
     }
 
     /*
@@ -289,26 +292,26 @@ public class HoloSharpCmd implements CommandExecutor {
     */
     private void moveHere(Player player, Location coords, String[] args) {
         if (args.length < 2) {
-            player.sendMessage(Messages.PREFIX + Messages.MOVE_HERE_HELP);
+            player.sendMessage(PREFIX + MOVE_HERE_HELP);
             return;
         }
         Location location = HologramIdentification.getLocation(player.getName(), args[1]);
         if (location == null) {
-            player.sendMessage(Messages.ERROR_PREFIX + Messages.NOT_FOUND);
+            player.sendMessage(ERROR_PREFIX + NOT_FOUND);
             return;
         }
         if (!MPlayer.get(player).getFaction().equals(BoardColl.get().getFactionAt(PS.valueOf(coords.getChunk())))) { // When a player is trying to add a hologram outside their faction
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_ADD_HOLOGRAM_HERE);
+            player.sendMessage(ERROR_PREFIX + NO_ADD_HOLOGRAM_HERE);
             return;
         }
         Collection<Hologram> list = HologramsAPI.getHolograms(plugin);
         for (Hologram holo : list) {
             if (holo.getLocation().equals(location)) {
-                List<String> lines = HoloSharp.holograms.getStringList("holograms."+player.getName()+"."+args[1]+".lines");
+                List<String> lines = HoloSharp.holograms.getStringList("holograms." + player.getName() + "." + args[1] + ".lines");
                 try {
                     HologramIdentification.deleteHologram(player.getName(), args[1]);
                 } catch (IOException e) {
-                    player.sendMessage(Messages.ERROR_PREFIX+Messages.FATAL);
+                    player.sendMessage(ERROR_PREFIX + FATAL);
                     e.printStackTrace();
                     return;
                 }
@@ -316,55 +319,140 @@ public class HoloSharpCmd implements CommandExecutor {
                 holo.delete();
                 // Now that the old hologram is deleted, we create the new one
                 Hologram newHologram = HologramsAPI.createHologram(plugin, coords);
-                for(String line : lines)
+                for (String line : lines)
                     newHologram.appendTextLine(line);
                 try {
-                    HologramIdentification.saveHologram(player,newHologram,args[1],lines);
+                    HologramIdentification.saveHologram(player.getName(), newHologram.getLocation(), args[1], lines);
                 } catch (IOException e) {
-                    player.sendMessage(Messages.ERROR_PREFIX+Messages.FATAL);
+                    player.sendMessage(ERROR_PREFIX + FATAL);
                     e.printStackTrace();
                     return;
                 }
-                player.sendMessage(Messages.PREFIX+Messages.MOVE_SUCCESS);
+                player.sendMessage(PREFIX + MOVE_SUCCESS);
                 return;
             }
         }
-        player.sendMessage(Messages.PREFIX + Messages.NOT_FOUND);
+        player.sendMessage(PREFIX + NOT_FOUND);
     }
 
     /*
         Transfers a given hologram name to another player.
         Use transferAll() for a full transfer.
     */
-    private void transferHologram(Player player, String[] args){
-        if(!player.hasPermission("holosharp.staff.transfer")){
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+    private void transferHologram(Player player, String[] args) {
+        if (!player.hasPermission("holosharp.staff.transfer")) {
+            player.sendMessage(ERROR_PREFIX + NO_PERMS);
             return;
         }
-        if(args.length < 4) {
-            player.sendMessage(Messages.PREFIX+Messages.TRANSFER_HELP);
+        if (args.length < 4) {
+            player.sendMessage(PREFIX + TRANSFER_HELP);
             return;
         }
-        if(!HologramIdentification.transfer(args[1],args[2],args[3])){
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.NOT_FOUND);
+        try {
+            if (!HologramIdentification.transfer(args[1], args[2], args[3])) {
+                player.sendMessage(ERROR_PREFIX + NOT_FOUND);
+                return;
+            }
+        } catch (IOException e) {
+            player.sendMessage(ERROR_PREFIX + FATAL);
             return;
         }
-        player.sendMessage(Messages.STAFF_PREFIX+Messages.TRANSFER_SUCCESS+args[3]);
+        player.sendMessage(STAFF_PREFIX + TRANSFER_SUCCESS + args[3]);
     }
 
     /*
         Transfers a player's holograms to another.
         Can be used in an account transfer, I assume?
     */
-    private void transferAll(Player player, String[] args){
-        if(args.length < 3){
-            player.sendMessage(Messages.ERROR_PREFIX+Messages.TRANSFER_ALL_HELP);
+    private void transferAll(Player player, String[] args) {
+        if (args.length < 3) {
+            player.sendMessage(ERROR_PREFIX + TRANSFER_ALL_HELP);
             return;
         }
-        Set<String> keys = HoloSharp.holograms.getConfigurationSection("holograms."+args[1]).getKeys(false);
-        for(String key : keys)
-            HologramIdentification.transfer(key,args[1],args[2]);
-        player.sendMessage(Messages.PREFIX+Messages.TRANSFER_ALL_SUCCESS+args[2]);
+        Set<String> keys = HoloSharp.holograms.getConfigurationSection("holograms." + args[1]).getKeys(false);
+        for (String key : keys) {
+            try {
+                HologramIdentification.transfer(key, args[1], args[2]);
+            } catch (IOException e) {
+                player.sendMessage(ERROR_PREFIX + FATAL);
+                return;
+            }
+        }
+        player.sendMessage(PREFIX + TRANSFER_ALL_SUCCESS + args[2]);
+    }
+
+    /*
+        Delete line from a hologram, specified with an integer.
+    */
+    private void deleteLine(Player player, String[] args) {
+        if (args.length < 3) {
+            if(player.hasPermission("holosharp.staff.deleteLineOther")){
+                player.sendMessage(PREFIX + DELETE_LINE_OTHER_HELP);
+                return;
+            }
+            player.sendMessage(PREFIX + DELETE_LINE_HELP);
+            return;
+        }
+        String playerName = player.getName();
+        String name = args[1];
+        int lineNumber;
+        try {
+            lineNumber = Integer.valueOf(args[2]);
+        } catch(NumberFormatException e) {
+            player.sendMessage(ERROR_PREFIX + INVALID_NUM);
+            return;
+        }
+        if(player.hasPermission("holosharp.staff.deleteLineOther") && args.length > 3){
+            playerName = args[1];
+            name = args[2];
+            try {
+                lineNumber = Integer.valueOf(args[3]);
+            } catch(NumberFormatException e) {
+                player.sendMessage(ERROR_PREFIX + INVALID_NUM);
+                return;
+            }
+        }
+        Location location = HologramIdentification.getLocation(playerName, name);
+        Collection<Hologram> list = HologramsAPI.getHolograms(plugin);
+        for (Hologram holo : list)
+            if (holo.getLocation().equals(location)) {
+                if(holo.size() == 1 && lineNumber == 0){
+                    player.sendMessage(ERROR_PREFIX + LAST_LINE);
+                    return;
+                }else if(holo.size() == 1){
+                    player.sendMessage(ERROR_PREFIX + INVALID_LINE);
+                    return;
+                }
+                try {
+                    holo.removeLine(lineNumber);
+                } catch (IndexOutOfBoundsException e) {
+                    player.sendMessage(ERROR_PREFIX + INVALID_LINE);
+                    return;
+                }
+                break;
+            }
+        try {
+            HologramIdentification.removeLine(playerName,name,lineNumber);
+        } catch (IOException e) {
+            player.sendMessage(ERROR_PREFIX + FATAL);
+            return;
+        }
+        player.sendMessage(PREFIX + DELETE_LINE_SUCCESS + args[1]);
+    }
+
+    private void createHologram(Player player, String[] args){
+        if(!player.hasPermission("holosharp.staff.create")){
+            player.sendMessage(ERROR_PREFIX + NO_PERMS);
+            return;
+        }
+        if(args.length < 4) {
+            player.sendMessage(PREFIX + CREATE_HELP);
+            return;
+        }
+        Location coords = player.getLocation();
+        coords.setY(player.getLocation().getBlockY() + 2);
+        if(!createHologram(coords,player, getTxt(2,args), args[2],args[1])) return;
+        player.sendMessage(STAFF_PREFIX + CREATE_SUCCESS);
     }
 
     /*
@@ -372,61 +460,76 @@ public class HoloSharpCmd implements CommandExecutor {
         In case of having no command found, the default message will be sent.
     */
     private void sendDetailedHelp(Player player, String[] args) {
-        if(args.length == 1) {
+        if (args.length == 1) {
             if (player.hasPermission("holosharp.staff.help"))
-                player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE_ADMIN);
+                player.sendMessage(PREFIX + CMD_USAGE_ADMIN);
             else
-                player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE);
+                player.sendMessage(PREFIX + CMD_USAGE);
             return;
         }
         switch (args[1].toLowerCase()) {
             case "buy":
-                player.sendMessage(Messages.PREFIX + Messages.BUY_HELP);
+                player.sendMessage(PREFIX + BUY_HELP);
                 break;
             case "remove":
             case "delete":
             case "del":
                 if (!player.hasPermission("holosharp.staff.help")) {
-                    player.sendMessage(Messages.PREFIX + Messages.REMOVE_HELP);
+                    player.sendMessage(PREFIX + REMOVE_HELP);
                     break;
                 }
-                player.sendMessage(Messages.PREFIX + Messages.REMOVE_OTHER_HELP);
+                player.sendMessage(PREFIX + REMOVE_OTHER_HELP);
                 break;
             case "addline":
-                player.sendMessage(Messages.PREFIX + Messages.ADDLINE_HELP);
+                player.sendMessage(PREFIX + ADDLINE_HELP);
                 break;
             case "movehere":
-                player.sendMessage(Messages.PREFIX + Messages.MOVE_HERE_HELP);
+                player.sendMessage(PREFIX + MOVE_HERE_HELP);
                 break;
             case "about":
-                player.sendMessage(Messages.PREFIX + Messages.ABOUT_HELP);
+                player.sendMessage(PREFIX + ABOUT_HELP);
                 break;
             case "hololist":
                 if (!player.hasPermission("holosharp.listOther")) {
-                    player.sendMessage(Messages.PREFIX + Messages.HOLOLIST_HELP);
+                    player.sendMessage(PREFIX + HOLOLIST_HELP);
                     break;
                 }
-                player.sendMessage(Messages.PREFIX + Messages.HOLOLISTOTHER_HELP);
+                player.sendMessage(PREFIX + HOLOLISTOTHER_HELP);
                 break;
             case "transfer":
-                if(!player.hasPermission("holosharp.staff.transfer")){
-                    player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+                if (!player.hasPermission("holosharp.staff.transfer")) {
+                    player.sendMessage(ERROR_PREFIX + NO_PERMS);
                     break;
                 }
-                player.sendMessage(Messages.PREFIX+Messages.TRANSFER_HELP);
+                player.sendMessage(PREFIX + TRANSFER_HELP);
                 break;
             case "transferall":
-                if(!player.hasPermission("holosharp.staff.transferAll")){
-                    player.sendMessage(Messages.ERROR_PREFIX+Messages.NO_PERMS);
+                if (!player.hasPermission("holosharp.staff.transferAll")) {
+                    player.sendMessage(ERROR_PREFIX + NO_PERMS);
                     break;
                 }
-                player.sendMessage(Messages.PREFIX+Messages.TRANSFER_ALL_HELP);
+                player.sendMessage(PREFIX + TRANSFER_ALL_HELP);
+                break;
+            case "deleteline":
+            case "removeline":
+                if (!player.hasPermission("holosharp.staff.deleteLineOther")) {
+                    player.sendMessage(PREFIX + DELETE_LINE_HELP);
+                    break;
+                }
+                player.sendMessage(PREFIX + DELETE_LINE_OTHER_HELP);
+                break;
+            case "create":
+                if(!player.hasPermission("holosharp.staff.create")) {
+                    player.sendMessage(ERROR_PREFIX + NO_PERMS);
+                    break;
+                }
+                player.sendMessage(PREFIX + CREATE_HELP);
                 break;
             default:
                 if (!player.hasPermission("holosharp.staff.help"))
-                    player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE);
+                    player.sendMessage(PREFIX + CMD_USAGE);
                 else
-                    player.sendMessage(Messages.PREFIX + Messages.CMD_USAGE_ADMIN);
+                    player.sendMessage(PREFIX + CMD_USAGE_ADMIN);
         }
     }
 
@@ -453,5 +556,37 @@ public class HoloSharpCmd implements CommandExecutor {
             txt = txt.concat(arg).concat(" ");
         }
         return txt;
+    }
+
+    /*
+        Checks if the user cannot add any more holograms due to
+        the limit given in config.yml.
+        If the limit in config.yml is -1, the user can add unlimited
+        holograms.
+    */
+    private boolean tooManyHolograms(Player player) {
+        if(plugin.getConfig().getInt("userLimit") == -1) return false;
+        if(HoloSharp.holograms.getConfigurationSection("holograms." + player.getName()) == null) return false;
+        Set<String> hologramKeys = HoloSharp.holograms.getConfigurationSection("holograms." + player.getName()).getKeys(false);
+        return hologramKeys.size() >= plugin.getConfig().getInt("userLimit");
+    }
+
+    private boolean createHologram(Location coords, Player player, String text, String name, String playerName) {
+        if(!HologramIdentification.hologramExists(player,name)){
+            player.sendMessage(ERROR_PREFIX + EXISTS_ALREADY);
+            return false;
+        }
+        Hologram hologram = HologramsAPI.createHologram(plugin, coords);
+        TextLine line = hologram.insertTextLine(0, text.replaceAll("&", "\u00a7"));
+        List<String> lineList = new ArrayList<>();
+        lineList.add(line.getText());
+        try {
+            HologramIdentification.saveHologram(playerName, hologram.getLocation(), name, lineList);
+        } catch (IOException e) {
+            player.sendMessage(ERROR_PREFIX + FATAL);
+            e.printStackTrace();
+            return false;
+        }
+        return true;
     }
 }

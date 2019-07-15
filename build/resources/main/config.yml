@@ -4,3 +4,6 @@
 
 # Cost a player has per hologram.
 costPerHologram: 100000
+# Limit of holograms per player (bypassed with holosharp.staff.bypass)
+# Set to -1 if you do not want a limit
+userLimit: 10

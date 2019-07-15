@@ -3,7 +3,7 @@ prefix: "&9HoloSharp &8&l» &7"
 # Same as above, but for errors.
 errorPrefix: "&cHoloSharp &8&l» &7"
 # Prefix for some staff actions
-staffPrefix: "&4Staff &8&l» &7"
+staffPrefix: "&6Staff &8&l» &7"
 
 # The following messages can be edited, but it is mostly intended to edit them only in case of color customization or changing color. Changing context of the messages is obviously not recommended.
 cmdUsage: "Usage: &f/hs [help] <buy|remove|addLine|list|about>&7. No params are case sensitive."
@@ -12,6 +12,8 @@ addLineSuccess: "Added a line successfully to hologram &f"
 moveSuccess: "Hologram moved successfully to your location."
 # Variable in the end (costPerHologram from config.yml)
 boughtSuccess: "Hologram purchased successfully for &f"
+# has variable
+deleteLineSuccess: "Successfully deleted line &f"
 # Beginning of list strings
 # Notice: listHeader has NO prefix.
 listHeader1: "&8&l-------------[ &9Holograms owned by &7"
@@ -32,6 +34,7 @@ addLineHelp: "Param &faddLine &8&l- &7Usage: &f/hs addLine <name> <text>&7. Adds
 holoListHelp: "Param &fholoList &8&l- &7Usage: &f/hs holoList&7. Lists all the holograms you own."
 aboutHelp: "Param &fabout &8&l- &7Simple as showing information about the plugin. No other params for it."
 moveHereHelp: "Param &fmoveHere &8&l- &7Usage: &f/hs moveHere <name>&7. Moves the hologram to your location."
+deleteLineHelp: "Param &fdeleteLine &8&l- &7Usage: &f/hs deleteLine <name> <lineNumber>&7. Removes a line from your hologram"
 
 # Staff command strings
 cmdUsageAdmin: "Admin usage: &f/hs [help] <buy|remove|addLine|list|transfer|transferAll|about>"
@@ -40,8 +43,12 @@ removeOtherHelp: "Param &fremove &8&l- &7Usage: &f/hs remove [user] <name>&7. De
 holoListOtherHelp: "Param &flist &8&l- &7Usage: &f/hs list [user]&7. Keep [user] empty for your own hologram list. Only staff can list others' holograms."
 transferHelp: "Param &ftransfer &8&l- &7Usage: &f/hs transfer <name> <userFrom> <userTo>&7. Transfers hologram ownership from a user to another. WARNING: PLAYER NAMES ARE CASE SENSITIVE!"
 transferAllHelp: "Param &ftransferall &8&l- &7Usage: &f/hs transferall <userFrom> <userTo>&7. Transfers all holograms from a user to another. WARNING: PLAYER NAMES ARE CASE SENSITIVE!"
+deleteLineOtherHelp: "Param &fdeleteLine &8&l- &7Usage: &f/hs deleteLine [playerName] <name> <lineNumber>&7. Removes a line from your or the given player's hologram."
+createHelp: "Param &fcreate &8&l- &7Usage: &f/hs create <user> <name> <text...>&7. Creates a hologram for another user (or yourself) without any restrictions. Staff-only."
 bypassedChunks: "Notice: You have bypassed the &ffaction territory restriction &7for normal users due to your rank/permissions."
 bypassedBal: "Notice: You have bypassed the &fmoney balance restriction &7for normal users due to your rank/permissions."
+bypassedLimit: "Notice: You have bypassed the &fhologram limit &7for normal users due to your rank/permissions."
+createSuccess: "Successfully created a hologram in your location for that user."
 # has variable
 transferSuccess: "Successfully transferred hologram to player &f"
 # has variable
@@ -57,3 +64,8 @@ noAddHologramHere: "You cannot add a hologram here."
 # Has a variable
 badBal: "You do not have enough money to purchase a hologram. Price: &f"
 existsAlready: "That hologram already exists. Please choose another name (recommended) or delete the one with this name."
+tooManyHolograms: "You already have too many holograms. Ask a staff member to bypass this amount in case you really want to."
+invalidNum: "That number is invalid. Please use an integer starting in &f0&7."
+invalidLine: "Invalid hologram line. Please notice that lines start in &f0&7 and not &f1&7."
+lastLine: "You cannot delete the last line of your hologram. Add another line and then delete this one."
+

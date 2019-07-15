@@ -18,8 +18,10 @@ package io.github.hotlava03.holosharp;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import io.github.hotlava03.holosharp.commands.HoloSharpCmd;
+import io.github.hotlava03.holosharp.config.Messages;
 import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -28,7 +30,6 @@ import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
@@ -39,10 +40,10 @@ public final class HoloSharp extends JavaPlugin implements Listener {
     public static FileConfiguration messages;
     public static Economy econ;
     public static File file;
+    public static File file2;
 
     @Override
-    public void onEnable() {
-        getLogger().info("-------HOLOSHARP BEGIN------");
+    public void onEnable(){
         if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays") || !Bukkit.getPluginManager().isPluginEnabled("Factions")) {
             getLogger().warning("HolographicDisplays/Factions is/are not enabled or installed. Please install this/these plugin(s) in order for HoloSharp to enable.");
             getLogger().warning("*** This plugin will be disabled. ***");
@@ -58,38 +59,34 @@ public final class HoloSharp extends JavaPlugin implements Listener {
         saveDefaultConfig();
         reloadConfig();
         file = new File(getDataFolder(),"holograms.yml");
-        File file2 = new File(getDataFolder(),"messages.yml");
-        holograms = YamlConfiguration.loadConfiguration(file);
+        file2 = new File(getDataFolder(),"messages.yml");
         messages = YamlConfiguration.loadConfiguration(file2);
-        if(!file.exists()) saveResource("holograms.yml",false);
+        holograms = YamlConfiguration.loadConfiguration(file);
+        if(!file.exists()) saveResource("holograms.yml",true);
         if(!file2.exists() || messages.get("prefix") == null){
             getLogger().info("Setting up plugin messages...");
-            saveResource("messages.yml",false);
+            saveResource("messages.yml",true);
             getLogger().info("Plugin messages set.");
-            reload();
-            return;
         }
+        messages = YamlConfiguration.loadConfiguration(file2);
+        holograms = YamlConfiguration.loadConfiguration(file);
         setupHolograms();
         this.getCommand("holosharp").setExecutor(new HoloSharpCmd(this));
         getServer().getPluginManager().registerEvents(this,this);
-        getLogger().info("Plugin started successfully. Thanks for using HoloSharp.");
-        getLogger().info("-------HOLOSHARP END------");
-    }
-
-    public void onDisable(){
-        try {
-            holograms.save(file);
-        }catch(IOException e){
-            this.getLogger().warning("Failed to save holograms.yml.");
-        }
+        getLogger().info(ChatColor.GREEN + "Plugin loaded successfully.");
     }
 
     public void reload(){
-        Bukkit.getPluginManager().disablePlugin(Bukkit.getPluginManager().getPlugin("HolographicDisplays"));
-        Bukkit.getPluginManager().enablePlugin(Bukkit.getPluginManager().getPlugin("HolographicDisplays"));
-        this.getPluginLoader().disablePlugin(this);
-        this.getPluginLoader().enablePlugin(this);
-        getLogger().info("Successfully reloaded HoloSharp and HolographicDisplays.");
+        for(Hologram hologram : HologramsAPI.getHolograms(this)){
+            hologram.clearLines();
+            hologram.delete();
+        }
+        reloadConfig();
+        messages = YamlConfiguration.loadConfiguration(file2);
+        holograms = YamlConfiguration.loadConfiguration(file);
+        Messages.reload();
+        setupHolograms();
+        getLogger().info("Successfully reloaded HoloSharp.");
     }
 
     private boolean setupEconomy() {
@@ -106,7 +103,7 @@ public final class HoloSharp extends JavaPlugin implements Listener {
 
     private void setupHolograms() {
         if (holograms.getConfigurationSection("holograms") == null) {
-            saveResource("holograms.yml",false);
+            saveResource("holograms.yml",true);
             return;
         }
         // Get players

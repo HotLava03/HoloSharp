@@ -62,12 +62,6 @@ public final class HoloSharp extends JavaPlugin implements Listener {
     @Override
     @SuppressWarnings("Duplicates")
     public void onEnable(){
-        if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays") || !Bukkit.getPluginManager().isPluginEnabled("Factions")) {
-            getLogger().warning("HolographicDisplays/Factions is/are not enabled or installed. Please install this/these plugin(s) in order for HoloSharp to enable.");
-            getLogger().warning("*** This plugin will be disabled. ***");
-            this.setEnabled(false);
-            return;
-        }
         if (!setupEconomy()) {
             getLogger().warning("Vault not found. Please add Vault in order for HoloSharp to load.");
             getLogger().warning("*** This plugin will be disabled. ***");

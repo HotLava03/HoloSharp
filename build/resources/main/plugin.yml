@@ -1,5 +1,5 @@
 name: HoloSharp
-version: 1.0-SNAPSHOT.03
+version: "1.0"
 author: HotLava03
 main: io.github.hotlava03.holosharp.HoloSharp
 api-version: 1.12.2

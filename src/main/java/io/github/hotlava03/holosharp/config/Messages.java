@@ -66,6 +66,12 @@ public class Messages {
     public static String LAST_LINE = getString("lastLine");
     public static String CREATE_HELP = getString("createHelp");
     public static String CREATE_SUCCESS = getString("createSuccess");
+    public static String DISBANDED = getString("disbanded");
+    public static String LEFT_JOINED = getString("leftJoined");
+    public static String CLAIM_UNCLAIMED = getString("claimUnclaimed");
+    public static String INSERT_LINE_HELP = getString("insertLineHelp");
+    public static String INSERT_LINE_SUCCESS = getString("insertLineSuccess");
+    public static String NUM_TOO_BIG = getString("numTooBig");
 
     private static String getString(String element){
         try {
@@ -125,5 +131,11 @@ public class Messages {
         LAST_LINE = getString("lastLine");
         CREATE_HELP = getString("createHelp");
         CREATE_SUCCESS = getString("createSuccess");
+        DISBANDED = getString("disbanded");
+        LEFT_JOINED = getString("leftJoined");
+        CLAIM_UNCLAIMED = getString("claimUnclaimed");
+        INSERT_LINE_HELP = getString("insertLineHelp");
+        INSERT_LINE_SUCCESS = getString("insertLineSuccess");
+        NUM_TOO_BIG = getString("numTooBig");
     }
 }

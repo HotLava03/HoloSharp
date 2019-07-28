@@ -6,7 +6,7 @@ errorPrefix: "&cHoloSharp &8&l» &7"
 staffPrefix: "&6Staff &8&l» &7"
 
 # The following messages can be edited, but it is mostly intended to edit them only in case of color customization or changing color. Changing context of the messages is obviously not recommended.
-cmdUsage: "Usage: &f/hs [help] <buy|remove|addLine|list|about>&7. No params are case sensitive."
+cmdUsage: "Usage: &f/hs &8[&fhelp&8] &8<&fbuy&8 |&fremove&8 | &faddLine&8 | &flist&8 | &fabout&8>&7. No params are case sensitive."
 deletedSuccess: "Successfully deleted the hologram."
 addLineSuccess: "Added a line successfully to hologram &f"
 moveSuccess: "Hologram moved successfully to your location."
@@ -14,6 +14,11 @@ moveSuccess: "Hologram moved successfully to your location."
 boughtSuccess: "Hologram purchased successfully for &f"
 # has variable
 deleteLineSuccess: "Successfully deleted line &f"
+disbanded: "Since &fyour faction &7was disbanded, the following amount of holograms has been deleted: &f"
+insertLineSuccess: "Successfully inserted a line."
+# both have variables
+leftJoined: "Since you left/joined your faction, the following amount of holograms you owned were deleted: &f"
+claimUnclaimed: "Since you claimed/unclaimed this chunk, the following amount of holograms was deleted: &f"
 # Beginning of list strings
 # Notice: listHeader has NO prefix.
 listHeader1: "&8&l-------------[ &9Holograms owned by &7"
@@ -34,16 +39,17 @@ addLineHelp: "Param &faddLine &8&l- &7Usage: &f/hs addLine <name> <text>&7. Adds
 holoListHelp: "Param &fholoList &8&l- &7Usage: &f/hs holoList&7. Lists all the holograms you own."
 aboutHelp: "Param &fabout &8&l- &7Simple as showing information about the plugin. No other params for it."
 moveHereHelp: "Param &fmoveHere &8&l- &7Usage: &f/hs moveHere <name>&7. Moves the hologram to your location."
-deleteLineHelp: "Param &fdeleteLine &8&l- &7Usage: &f/hs deleteLine <name> <lineNumber>&7. Removes a line from your hologram"
+deleteLineHelp: "Param &fdeleteLine &8&l- &7Usage: &f/hs deleteLine <name> <lineNumber>&7. Removes a line from your hologram. Remember &4all lines start in 0&7!"
+insertLineHelp: "Param &finsertLine &8&l- &7Usage: &f/hs insertLine <name> <lineNumber> <text...>&7. Inserts a line to your hologram in the given number. Remember &4all lines start in 0&7!"
 
 # Staff command strings
-cmdUsageAdmin: "Admin usage: &f/hs [help] <buy|remove|addLine|list|transfer|transferAll|about>"
+cmdUsageAdmin: "Admin usage: &f/hs &8[&fhelp&8] &8<&fbuy&8 | &fremove&8 | &faddLine&8 | &flist&8 | &fcreate&8 | &ftransfer&8 | &ftransferAll&8 | &fabout&8>&7. No params are case sensitive."
 reloadSuccess: "Plugin config reloaded successfully."
 removeOtherHelp: "Param &fremove &8&l- &7Usage: &f/hs remove [user] <name>&7. Deletes completely a hologram the given user owns, or yours if you don't specify a user."
 holoListOtherHelp: "Param &flist &8&l- &7Usage: &f/hs list [user]&7. Keep [user] empty for your own hologram list. Only staff can list others' holograms."
 transferHelp: "Param &ftransfer &8&l- &7Usage: &f/hs transfer <name> <userFrom> <userTo>&7. Transfers hologram ownership from a user to another. WARNING: PLAYER NAMES ARE CASE SENSITIVE!"
 transferAllHelp: "Param &ftransferall &8&l- &7Usage: &f/hs transferall <userFrom> <userTo>&7. Transfers all holograms from a user to another. WARNING: PLAYER NAMES ARE CASE SENSITIVE!"
-deleteLineOtherHelp: "Param &fdeleteLine &8&l- &7Usage: &f/hs deleteLine [playerName] <name> <lineNumber>&7. Removes a line from your or the given player's hologram."
+deleteLineOtherHelp: "Param &fdeleteLine &8&l- &7Usage: &f/hs deleteLine [playerName] <name> <lineNumber>&7. Removes a line from your or the given player's hologram. Remember &4all lines start in 0&7!"
 createHelp: "Param &fcreate &8&l- &7Usage: &f/hs create <user> <name> <text...>&7. Creates a hologram for another user (or yourself) without any restrictions. Staff-only."
 bypassedChunks: "Notice: You have bypassed the &ffaction territory restriction &7for normal users due to your rank/permissions."
 bypassedBal: "Notice: You have bypassed the &fmoney balance restriction &7for normal users due to your rank/permissions."
@@ -68,4 +74,5 @@ tooManyHolograms: "You already have too many holograms. Ask a staff member to by
 invalidNum: "That number is invalid. Please use an integer starting in &f0&7."
 invalidLine: "Invalid hologram line. Please notice that lines start in &f0&7 and not &f1&7."
 lastLine: "You cannot delete the last line of your hologram. Add another line and then delete this one."
+numTooBig: "You cannot add lines with &finsertline&7. Remember that line numbers start at &f0&7 and you can only use line numbers that exist in this hologram's lines."
 

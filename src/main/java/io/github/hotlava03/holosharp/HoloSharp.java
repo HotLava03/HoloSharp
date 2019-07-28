@@ -17,22 +17,39 @@ package io.github.hotlava03.holosharp;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.massivecraft.factions.entity.BoardColl;
+import com.massivecraft.factions.entity.Faction;
+import com.massivecraft.factions.entity.MPlayer;
+import com.massivecraft.factions.event.EventFactionsChunksChange;
+import com.massivecraft.factions.event.EventFactionsDisband;
+import com.massivecraft.factions.event.EventFactionsMembershipChange;
+import com.massivecraft.massivecore.ps.PS;
 import io.github.hotlava03.holosharp.commands.HoloSharpCmd;
+import io.github.hotlava03.holosharp.commands.HoloSharpTabComplete;
 import io.github.hotlava03.holosharp.config.Messages;
+import io.github.hotlava03.holosharp.util.HologramIdentification;
 import net.milkbowl.vault.economy.Economy;
+import org.apache.commons.lang.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+
+import static io.github.hotlava03.holosharp.config.Messages.*;
 
 public final class HoloSharp extends JavaPlugin implements Listener {
 
@@ -43,6 +60,7 @@ public final class HoloSharp extends JavaPlugin implements Listener {
     public static File file2;
 
     @Override
+    @SuppressWarnings("Duplicates")
     public void onEnable(){
         if (!Bukkit.getPluginManager().isPluginEnabled("HolographicDisplays") || !Bukkit.getPluginManager().isPluginEnabled("Factions")) {
             getLogger().warning("HolographicDisplays/Factions is/are not enabled or installed. Please install this/these plugin(s) in order for HoloSharp to enable.");
@@ -62,7 +80,7 @@ public final class HoloSharp extends JavaPlugin implements Listener {
         file2 = new File(getDataFolder(),"messages.yml");
         messages = YamlConfiguration.loadConfiguration(file2);
         holograms = YamlConfiguration.loadConfiguration(file);
-        if(!file.exists()) saveResource("holograms.yml",true);
+        if(!file.exists()) saveResource("holograms.yml",false);
         if(!file2.exists() || messages.get("prefix") == null){
             getLogger().info("Setting up plugin messages...");
             saveResource("messages.yml",true);
@@ -72,16 +90,24 @@ public final class HoloSharp extends JavaPlugin implements Listener {
         holograms = YamlConfiguration.loadConfiguration(file);
         setupHolograms();
         this.getCommand("holosharp").setExecutor(new HoloSharpCmd(this));
+        this.getCommand("holosharp").setTabCompleter(new HoloSharpTabComplete());
         getServer().getPluginManager().registerEvents(this,this);
         getLogger().info(ChatColor.GREEN + "Plugin loaded successfully.");
     }
 
+    @SuppressWarnings("Duplicates")
     public void reload(){
         for(Hologram hologram : HologramsAPI.getHolograms(this)){
             hologram.clearLines();
             hologram.delete();
         }
         reloadConfig();
+        if(!file.exists()) saveResource("holograms.yml",false);
+        if(!file2.exists() || messages.get("prefix") == null){
+            getLogger().info("Setting up plugin messages...");
+            saveResource("messages.yml",true);
+            getLogger().info("Plugin messages set.");
+        }
         messages = YamlConfiguration.loadConfiguration(file2);
         holograms = YamlConfiguration.loadConfiguration(file);
         Messages.reload();
@@ -129,30 +155,67 @@ public final class HoloSharp extends JavaPlugin implements Listener {
         }
         getLogger().info("Process of adding holograms finished. Check above for errors.");
     }
-    /*@EventHandler
-    public void onDisbandFac(EventFactionsDisband event) throws IOException {
-        // TODO fix on future version
+    @EventHandler
+    public void onDisbandFac(EventFactionsDisband event) {
+
         Faction faction = event.getFaction();
-        List<Player> players = new ArrayList<>();
-        for (MPlayer player : faction.getMPlayers())
-            players.add(player.getPlayer());
-        for (Player player : players) {
-            Set<String> names;
+        List<Chunk> chunks = new ArrayList<>();
+        for(PS ps : BoardColl.get().getChunks(faction))
+            chunks.add(ps.asBukkitChunk());
+        if(chunks.isEmpty()) return;
+        int amt = HologramIdentification.deleteAll(chunks);
+        if(amt == 0)
+            return;
+        else
+            event.getMPlayer().getPlayer().sendMessage(PREFIX + DISBANDED + amt);
+        getLogger().info("As the faction "+faction.getName()+" was disbanded, all holograms from it have been deleted.");
+
+    }
+
+    @EventHandler
+    public void onClaimChange(EventFactionsChunksChange event) {
+        Set<PS> psChunks = event.getChunks();
+        List<Chunk> chunks = new ArrayList<>();
+        for(PS ps : psChunks)
+            chunks.add(ps.asBukkitChunk());
+        int amt = HologramIdentification.deleteAll(chunks);
+        if(amt == 0)
+            return;
+        else
+            event.getMPlayer().getPlayer().sendMessage(PREFIX + CLAIM_UNCLAIMED + amt);
+        getLogger().info("As the chunk " + chunks.get(0).getX() + " " + chunks.get(0).getZ() + " was claimed/unclaimed, all holograms from it have been deleted");
+    }
+
+    @EventHandler
+    public void onMembershipChange(EventFactionsMembershipChange event) {
+        int i = 0;
+        String playerName;
+        try {
+            playerName = event.getMPlayer().getPlayer().getName();
+        }catch(NullPointerException e) {
+            return;
+        }
+        Set<String> ownedHolograms = holograms.getConfigurationSection("holograms."+playerName).getKeys(false);
+        if(ownedHolograms.isEmpty()) return;
+        for(String ownedHologram : ownedHolograms) {
+            Location location;
             try {
-                names = HoloSharp.holograms.getConfigurationSection("holograms." + player).getKeys(false);
-            }catch(NullPointerException e){
+                location = HologramIdentification.deleteHologram(playerName, ownedHologram);
+            } catch (IOException e) {
+                e.printStackTrace();
                 continue;
             }
-            for (String name : names) {
-                List<Location> allLocations = (List<Location>) HoloSharp.holograms.getList("holograms." + player + "." + name + "coordinates");
-                for (Location location : allLocations) {
-                    Set<PS> psSet = BoardColl.get().getChunks(faction);
-                    for (PS ps : psSet)
-                        if (location.getChunk().equals(ps.getChunk().asBukkitChunk()))
-                            HologramIdentification.deleteHologram(player, name);
+            Collection<Hologram> list = HologramsAPI.getHolograms(this);
+            for (Hologram holo : list) {
+                if (holo.getLocation().equals(location)) {
+                    holo.clearLines();
+                    holo.delete();
+                    i++;
                 }
             }
         }
-    }*/
+        event.getMPlayer().getPlayer().sendMessage(PREFIX + LEFT_JOINED + i);
+        getLogger().info("As the user "+playerName+" joined/left a faction, all their holograms have been deleted.");
+    }
 
 }

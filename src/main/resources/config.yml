@@ -1,9 +1,9 @@
-########################################################
-##                  HoloSharp Config                  ##
-########################################################
+#########################################
+#          Collectibles Config          #
+#########################################
 
-# Cost a player has per hologram.
-costPerHologram: 100000
-# Limit of holograms per player (bypassed with holosharp.staff.bypass)
-# Set to -1 if you do not want a limit
-userLimit: 10
+# NOTICE: NOT ALL THE CODE IN THIS PLUGIN IS MINE
+# Some classes have been provided by Tiffaa, thank you
+
+# Server name
+server: "Mythic"

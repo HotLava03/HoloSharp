@@ -1,36 +1,14 @@
-name: HoloSharp
-version: "1.0"
-author: HotLava03
-main: io.github.hotlava03.holosharp.HoloSharp
-api-version: 1.12.2
-depend:
-  [Factions, HolographicDisplays, Vault]
+name: Collectibles
+version: @version@
+main: io.github.hotlava03.collectibles.Collectibles
+authors: [HotLava03]
+description: Collectibles viewer and giver
 commands:
-  holosharp:
-    description: Buy a hologram
-    usage: /holosharp
-    aliases:
-      - hs
-      - holos
-      - hsharp
+  collectibles:
+    description: Open the collectibles menu
+    aliases: [coll, col]
 permissions:
-  holosharp.staff.help:
-    description: Get access to staff help.
-  holosharp.staff.deleteOther:
-    description: Delete others' holograms.
-  holosharp.staff.listOther:
-    description: List others' holograms.
-  holosharp.staff.reload:
-    description: Reload the plugin configuration files.
-  holosharp.staff.bypass:
-    description: Bypasses some user restrictions (not all to avoid errors)
-  holosharp.user.hs:
-    description: Allows plugin usage generally
-  holosharp.staff.transfer:
-    description: Allow to transfer a hologram from a user to another.
-  holosharp.staff.transferAll:
-    description: Allow transfering all holograms from a user to another.
-  holosharp.staff.deleteLineOther:
-    description: Allow deleting another user's line from another user's hologram.
-  holosharp.staff.create:
-    description: Create a hologram without any costs or restrictions, for any user.
+  collectibles.view:
+    description: View the collectibles menu.
+  collectibles.admin:
+    description: Give a user a selected collectible.

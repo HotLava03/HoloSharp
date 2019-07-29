@@ -1,0 +1,27 @@
+# EXAMPLE
+# Enchant levels are given in the order you give the enchants.
+
+collectibles:
+  floorWasLava:
+    item: "LAVA_BUCKET"
+    displayName: "&cFloor was lava"
+    lore:
+      - "Rather hot there"
+      - "&bCollectible #1"
+    enchants:
+      - "MENDING"
+    levels:
+      - 1
+    unbreakable: "false"
+    flags:
+      - "HIDE_ENCHANTS"
+
+# Delete the above if you want. It's best to keep it commented at least
+# though to not forget anything.
+# If you have any accidents delete the file and reload the config to reset this.
+
+
+
+
+
+

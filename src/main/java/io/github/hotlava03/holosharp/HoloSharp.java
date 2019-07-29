@@ -189,6 +189,8 @@ public final class HoloSharp extends JavaPlugin implements Listener {
         }catch(NullPointerException e) {
             return;
         }
+        if(holograms.getConfigurationSection("holograms."+playerName) == null)
+            return;
         Set<String> ownedHolograms = holograms.getConfigurationSection("holograms."+playerName).getKeys(false);
         if(ownedHolograms.isEmpty()) return;
         for(String ownedHologram : ownedHolograms) {

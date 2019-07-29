@@ -6,7 +6,7 @@ errorPrefix: "&cHoloSharp &8&l» &7"
 staffPrefix: "&6Staff &8&l» &7"
 
 # The following messages can be edited, but it is mostly intended to edit them only in case of color customization or changing color. Changing context of the messages is obviously not recommended.
-cmdUsage: "Usage: &f/hs &8[&fhelp&8] &8<&fbuy&8 |&fremove&8 | &faddLine&8 | &flist&8 | &fabout&8>&7. No params are case sensitive."
+cmdUsage: "Notice: No params are case sensitive.\n&8&l-------------[ &9HoloSharp help &8&l]-------------\n&7Commands: &f/hs &8[&fhelp&8] \n&8- &7buy          &8- &7remove \n&8- &7addLine     &8- &7list \n&8- &7deleteLine  &8- &7movehere  \n&8- &7insertLine  &8- &7about\n&8&l----------------------------------------"
 deletedSuccess: "Successfully deleted the hologram."
 addLineSuccess: "Added a line successfully to hologram &f"
 moveSuccess: "Hologram moved successfully to your location."
@@ -43,7 +43,7 @@ deleteLineHelp: "Param &fdeleteLine &8&l- &7Usage: &f/hs deleteLine <name> <line
 insertLineHelp: "Param &finsertLine &8&l- &7Usage: &f/hs insertLine <name> <lineNumber> <text...>&7. Inserts a line to your hologram in the given number. Remember &4all lines start in 0&7!"
 
 # Staff command strings
-cmdUsageAdmin: "Admin usage: &f/hs &8[&fhelp&8] &8<&fbuy&8 | &fremove&8 | &faddLine&8 | &flist&8 | &fcreate&8 | &ftransfer&8 | &ftransferAll&8 | &fabout&8>&7. No params are case sensitive."
+cmdUsageAdmin: "Notice: No params are case sensitive.\n&8&l-------------[ &6HoloSharp staff help &8&l]-------------\n&7Commands: &f/hs &8[&fhelp&8] \n&8- &7buy          &8- &7remove \n&8- &7addLine     &8- &7list \n&8- &7deleteLine  &8- &7movehere  \n&8- &7insertLine  &8- &6create \n&8- &6transfer   &8- &6transferall \n&8- &7about\n&8&l--------------------------------------------"
 reloadSuccess: "Plugin config reloaded successfully."
 removeOtherHelp: "Param &fremove &8&l- &7Usage: &f/hs remove [user] <name>&7. Deletes completely a hologram the given user owns, or yours if you don't specify a user."
 holoListOtherHelp: "Param &flist &8&l- &7Usage: &f/hs list [user]&7. Keep [user] empty for your own hologram list. Only staff can list others' holograms."
@@ -75,4 +75,3 @@ invalidNum: "That number is invalid. Please use an integer starting in &f0&7."
 invalidLine: "Invalid hologram line. Please notice that lines start in &f0&7 and not &f1&7."
 lastLine: "You cannot delete the last line of your hologram. Add another line and then delete this one."
 numTooBig: "You cannot add lines with &finsertline&7. Remember that line numbers start at &f0&7 and you can only use line numbers that exist in this hologram's lines."
-

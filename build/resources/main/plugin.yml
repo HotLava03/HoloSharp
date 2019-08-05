@@ -1,5 +1,5 @@
 name: HoloSharp
-version: 1.2
+version: 1.1
 main: io.github.hotlava03.holosharp.HoloSharp
 api-version: 1.13
 depend: [HolographicDisplays, Vault, Factions]

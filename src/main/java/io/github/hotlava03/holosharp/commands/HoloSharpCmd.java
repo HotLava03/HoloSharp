@@ -109,7 +109,7 @@ public class HoloSharpCmd implements CommandExecutor {
                 createHologram(player, args);
                 break;
             case "about":
-                player.sendMessage("\u00a75Holo# \u00a78\u00a7l\u00bb \u00a77Holo# by \u00a7fHotLava03\u00a77. Version \u00a7f1.0\u00a77.");
+                player.sendMessage("\u00a75Holo# \u00a78\u00a7l\u00bb \u00a77Holo# by \u00a7fHotLava03\u00a77. Version \u00a7f1.1\u00a77.");
                 break;
             default:
                 if (!player.hasPermission("holosharp.staff.help"))

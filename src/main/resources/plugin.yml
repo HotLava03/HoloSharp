@@ -1,10 +1,11 @@
 name: HoloSharp
-version: "1.0"
-author: HotLava03
+version: 1.2
 main: io.github.hotlava03.holosharp.HoloSharp
-api-version: 1.12.2
-depend:
-  [Factions, HolographicDisplays, Vault]
+api-version: 1.13
+depend: [HolographicDisplays, Vault, Factions]
+authors: [HotLava03]
+description: Safely use Holographic Displays in your factions
+website: hotlava03.github.io
 commands:
   holosharp:
     description: Buy a hologram
